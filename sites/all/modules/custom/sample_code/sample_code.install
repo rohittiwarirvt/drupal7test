@@ -1,0 +1,155 @@
+<?php
+
+
+
+function scratchpad_update_7000() {
+  if (!field_info_field(PARAGRAPH_ITEM_IMAGE_STYLE)) {
+    $field = array(
+        'field_name' => PARAGRAPH_ITEM_IMAGE_STYLE,
+        'required' => false,
+        'type' => 'list_text' ,
+        'settings' => array(
+          'allowed_values_function' => '_custom_image_styles',
+         )
+        );
+     field_create_field($field);
+   }
+
+
+  $field_instance = array(
+    'field_name' => PARAGRAPH_ITEM_IMAGE_STYLE,
+    'label' => 'Specify Image styles for the paragraphs items',
+    'entity_type' => 'paragraphs_item',
+    'bundle' => 'image_text'
+  );
+
+  field_create_instance($field_instance);
+}
+
+/**
+ * Implements hook_uninstall()
+ *
+ */
+function sample_code_uninstall() {
+  if (field_info_field(PARAGRAPH_ITEM_IMAGE_STYLE)) {
+    field_delete_field(PARAGRAPH_ITEM_IMAGE_STYLE);
+    watchdog('scratchpad', 'field image has been successfully deleted', array(), WATCHDOG_NOTICE);
+  }
+
+  drupal_uninstall_schema('contact_v1');
+}
+
+
+
+
+/**
+ * Implements hook_install().
+ */
+
+function sample_code_schema() {
+  $schema['contact_v1'] = array(
+    'description' => 'The base Table for Contacts v1',
+    'fields' => array(
+      'cid' => array(
+        'description' =>'Primary key',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+        ),
+      'first_name' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+        ),
+      'last_name' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+        ),
+      'email' => array(
+        'type' => 'varchar',
+        'length' => 150,
+        'not null' => TRUE,
+        'default' => '',
+        ),
+      'phone_number' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+        ),
+      'status' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+        ),
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        ),
+      ),
+    'primary key' => array('cid'),
+    'indexes' => array(
+      'uid' => array('uid'),
+      'cid' => array('cid')
+      ),
+
+    'foreign key' => array(
+      'contact_created' => array(
+        'table' => 'user',
+        'columns' => array(
+          'uid' => 'uid'
+          )
+        )
+      )
+  );
+
+  return $schema;
+}
+
+
+
+/**
+ * implements hook_enable()
+ *
+ */
+
+function sample_code_enable() {
+  if (!field_info_field(FIELD_IMAGE_STYLE_OPTIONS)) {
+    $field = array(
+        'field_name' => FIELD_IMAGE_STYLE_OPTIONS,
+        'required' => TRUE,
+        'type' => 'list_text' ,
+        'settings' => array(
+          'allowed_values_function' => '_custom_image_styles',
+          'allowed_values' => array(
+            'no_image' => 'No Image'
+            ),
+        )
+    );
+
+     field_create_field($field);
+   }
+
+
+  $field_instance = array(
+    'field_name' => FIELD_IMAGE_STYLE_OPTIONS,
+    'label' => 'Specify Image styles for the paragraphs items image',
+    'entity_type' => 'node',
+    'bundle' => BUNDLE_ARTICLE,
+    'required' => TRUE,
+    'default_value' => array(
+        0 => array(
+          'value' => 'thumbnail'
+        )
+     )
+  );
+
+  field_create_instance($field_instance);
+
+  drupal_set_message(t('Successfully created field @field_name and added it to @paragraph_bundle ', array('@field_name' => FIELD_IMAGE_STYLE_OPTIONS, '@node_bundle' => BUNDLE_ARTICLE))) ;
+}

@@ -1,0 +1,156 @@
+<?php
+
+
+/**
+ * Defining Global Constants
+ */
+
+define('CONTACT_V1_TABLE', 'contact_v1');
+
+//define('PARAGRAPH_ITEM_SUBTYPE');
+define('PARAGRAPH_ITEM_IMAGE_FIELD_NAME', 'field_image_test');
+define('PARAGRAPH_ITEM_IMAGE_STYLE', 'field_custom_image_style');
+define('PARAGRAPH_ITEM_SUBTYPE','image_text');
+
+
+
+
+
+
+
+/**
+ * Implementas hook_menu
+ */
+
+function sample_code_v1_menu() {
+  $menu = array();
+
+  $menu['sample_code/v1/contact'] = array(
+    'title' => 'List  Contacts',
+    'page callback' => 'sample_code_list_all_contact_v1',
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/sample_code_contact_v1.inc'
+  );
+
+  $menu['sample_code/v1/contact/add'] = array(
+    'title' => 'Add Contact',
+    'page callback'=> 'drupal_get_form',
+    'page arguments' => array('sample_code_add_contact_v1'),
+    'access callback' => TRUE,
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'includes/sample_code_contact_v1.inc'
+
+  );
+
+  $menu['sample_code/v1/contact/%contact/edit'] = array(
+    'title' => 'Edit Contact',
+    'page callback' => 'sample_code_edit_contact_v1',
+    'page arguments' => array(3),
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/sample_code_contact_v1.inc'
+
+  );
+
+  $menu['sample_code/v1/contact/%contact/delete'] = array(
+    'title' => 'Delete Contact',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('sample_code_delete_contact_v1', 3),
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/sample_code_contact_v1.inc'
+
+  );
+
+  $menu['sample_code/v1/contact/%contact/view'] = array(
+    'title' => 'View Contact',
+    'page callback'=> 'sample_code_show_contact_v1',
+    'page arguments' => array(3),
+    'access callback' => TRUE,
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'includes/sample_code_contact_v1.inc'
+
+  );
+
+  return $menu;
+}
+
+
+/**
+ * Implements hook_permission().
+ */
+
+function sample_code_v1_permission() {
+  $permissions = array();
+
+  $permissions = array(
+    'create contact' => array(
+      'title' => t('Create Contact'),
+      'description' => 'Create a contact',
+      ),
+    'view contact' => array(
+      'title' => t('View A Contact'),
+      'description' => 'View a contact',
+      ),
+    'edit contact' => array(
+      'title' => t('Edit a Contact'),
+      'description' => 'Edit a contact',
+      ),
+    'delete contact' => array(
+      'title' => t('Delete a Contact'),
+      'description' => 'Delete a contact',
+      ),
+    );
+
+  return $permissions;
+}
+
+function contact_load($cid = NULL) {
+  module_load_include('inc', 'sample_code_v1', 'includes/sample_code_contact_v1.utils');
+  $contact = contact_load_util(array('cid' => $cid));
+  return $contact ? reset($contact) : FALSE;
+}
+
+/**
+ * Implements hook_theme().
+ */
+
+function sample_code_v1_theme($existing, $type, $theme, $path) {
+  $path = drupal_get_path('module', 'sample_code_v1');
+  return array(
+     'sample_code_v1_show_contact' => array(
+        'variables' => array('contact' => NULL),
+        'template' => 'sample-code-contact-v1-view',
+        'path' => $path .'/templates'
+      )
+    );
+}
+
+/**
+ *  using template preprocess for defining default values
+ */
+function template_preprocess_sample_code_v1_show_contact(&$vars){
+  $contact = $vars['contact'];
+  $vars['cid'] = $contact->cid;
+  $vars['first_name'] = $contact->first_name;
+  $vars['last_name'] = $contact->last_name;
+  $vars['email'] =  $contact->email;
+  $vars['phone_number'] = $contact->phone_number;
+  $vars['status'] = $contact->status;
+  $author = user_load($contact->uid);
+  $vars['author_name'] = $author->name;
+}
+
+
+
+/**
+ * allowed_value functions callback for field_evh_custom_image_style
+ * @return [type] [description]
+ */
+
+function _custom_image_styles() {
+  $image_styles =  image_style_options();
+  $image_styles = array_merge($image_styles, array( 'no_image' => 'No Image'));
+  return $image_styles;
+}

@@ -1,0 +1,6 @@
+name = SampleCode
+description = "SampleCode for play"
+package = Develop
+core = 7.x
+
+
