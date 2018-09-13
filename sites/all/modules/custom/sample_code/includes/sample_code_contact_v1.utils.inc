@@ -131,7 +131,7 @@ function sample_code_delete_contact_v1($form, $form_state, $contact) {
 
 
 function sample_code_delete_contact_v1_submit($form, &$form_state) {
-  module_load_include('inc', 'sample_code_v1', 'includes/sample_code_contact_v1.utils');
+  module_load_include('inc', 'sample_code', 'includes/sample_code_contact_v1.utils');
 
   if ( $form_state['values']['confirm']) {
     try {
@@ -146,7 +146,7 @@ function sample_code_delete_contact_v1_submit($form, &$form_state) {
 }
 
 function sample_code_list_all_contact_v1() {
-  module_load_include('inc', 'sample_code_v1', 'includes/sample_code_contact_v1.utils');
+  module_load_include('inc', 'sample_code', 'includes/sample_code_utils');
   $query = db_select(CONTACT_V1_TABLE, 'cv1')
             ->fields('cv1', array('cid', 'first_name','last_name'))
             ->addTag('node_access');
@@ -177,7 +177,7 @@ function sample_code_list_all_contact_v1() {
 
 function sample_code_show_contact_v1($contact) {
   $build = array(
-    '#theme' => 'sample_code_v1_show_contact',
+    '#theme' => 'sample_code_show_contact',
     '#contact' => $contact,
   );
 

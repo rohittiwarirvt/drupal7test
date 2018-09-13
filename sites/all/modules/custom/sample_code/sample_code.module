@@ -8,9 +8,9 @@
 define('CONTACT_V1_TABLE', 'contact_v1');
 
 //define('PARAGRAPH_ITEM_SUBTYPE');
-define('PARAGRAPH_ITEM_IMAGE_FIELD_NAME', 'field_image_test');
-define('PARAGRAPH_ITEM_IMAGE_STYLE', 'field_custom_image_style');
-define('PARAGRAPH_ITEM_SUBTYPE','image_text');
+define('NODE_IMAGE_FIELD_NAME', 'field_image');
+define('NODE_IMAGE_STYLE_FIELD', 'field_custom_image_style');
+define('NODE_SUBTYPE','article');
 
 
 
@@ -22,7 +22,7 @@ define('PARAGRAPH_ITEM_SUBTYPE','image_text');
  * Implementas hook_menu
  */
 
-function sample_code_v1_menu() {
+function sample_code_menu() {
   $menu = array();
 
   $menu['sample_code/v1/contact'] = array(
@@ -30,7 +30,7 @@ function sample_code_v1_menu() {
     'page callback' => 'sample_code_list_all_contact_v1',
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'includes/sample_code_contact_v1.inc'
+    'file' => 'includes/sample_code_contact_v1.utils.inc'
   );
 
   $menu['sample_code/v1/contact/add'] = array(
@@ -39,7 +39,7 @@ function sample_code_v1_menu() {
     'page arguments' => array('sample_code_add_contact_v1'),
     'access callback' => TRUE,
     'type' => MENU_LOCAL_ACTION,
-    'file' => 'includes/sample_code_contact_v1.inc'
+    'file' => 'includes/sample_code_contact_v1.utils.inc'
 
   );
 
@@ -49,7 +49,7 @@ function sample_code_v1_menu() {
     'page arguments' => array(3),
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'includes/sample_code_contact_v1.inc'
+    'file' => 'includes/sample_code_contact_v1.utils.inc'
 
   );
 
@@ -59,7 +59,7 @@ function sample_code_v1_menu() {
     'page arguments' => array('sample_code_delete_contact_v1', 3),
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'includes/sample_code_contact_v1.inc'
+    'file' => 'includes/sample_code_contact_v1.utils.inc'
 
   );
 
@@ -69,7 +69,7 @@ function sample_code_v1_menu() {
     'page arguments' => array(3),
     'access callback' => TRUE,
     'type' => MENU_LOCAL_ACTION,
-    'file' => 'includes/sample_code_contact_v1.inc'
+    'file' => 'includes/sample_code_contact_v1.utils.inc'
 
   );
 
@@ -81,7 +81,7 @@ function sample_code_v1_menu() {
  * Implements hook_permission().
  */
 
-function sample_code_v1_permission() {
+function sample_code_permission() {
   $permissions = array();
 
   $permissions = array(
@@ -107,7 +107,7 @@ function sample_code_v1_permission() {
 }
 
 function contact_load($cid = NULL) {
-  module_load_include('inc', 'sample_code_v1', 'includes/sample_code_contact_v1.utils');
+  module_load_include('inc', 'sample_code', 'includes/sample_code_utils');
   $contact = contact_load_util(array('cid' => $cid));
   return $contact ? reset($contact) : FALSE;
 }
@@ -116,10 +116,10 @@ function contact_load($cid = NULL) {
  * Implements hook_theme().
  */
 
-function sample_code_v1_theme($existing, $type, $theme, $path) {
-  $path = drupal_get_path('module', 'sample_code_v1');
+function sample_code_theme($existing, $type, $theme, $path) {
+  $path = drupal_get_path('module', 'sample_code');
   return array(
-     'sample_code_v1_show_contact' => array(
+     'sample_code_show_contact' => array(
         'variables' => array('contact' => NULL),
         'template' => 'sample-code-contact-v1-view',
         'path' => $path .'/templates'
@@ -130,7 +130,7 @@ function sample_code_v1_theme($existing, $type, $theme, $path) {
 /**
  *  using template preprocess for defining default values
  */
-function template_preprocess_sample_code_v1_show_contact(&$vars){
+function template_preprocess_sample_code_show_contact(&$vars){
   $contact = $vars['contact'];
   $vars['cid'] = $contact->cid;
   $vars['first_name'] = $contact->first_name;

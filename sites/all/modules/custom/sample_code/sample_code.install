@@ -1,44 +1,61 @@
 <?php
 
 
+/**
+ * implements hook_enable()
+ *
+ */
 
-function scratchpad_update_7000() {
-  if (!field_info_field(PARAGRAPH_ITEM_IMAGE_STYLE)) {
+function sample_code_enable() {
+  if (!field_info_field(NODE_IMAGE_STYLE_FIELD)) {
     $field = array(
-        'field_name' => PARAGRAPH_ITEM_IMAGE_STYLE,
-        'required' => false,
+        'field_name' => NODE_IMAGE_STYLE_FIELD,
+        'required' => TRUE,
         'type' => 'list_text' ,
         'settings' => array(
           'allowed_values_function' => '_custom_image_styles',
-         )
-        );
+          'allowed_values' => array(
+            'no_image' => 'No Image'
+            ),
+        )
+    );
+
      field_create_field($field);
    }
 
 
   $field_instance = array(
-    'field_name' => PARAGRAPH_ITEM_IMAGE_STYLE,
-    'label' => 'Specify Image styles for the paragraphs items',
-    'entity_type' => 'paragraphs_item',
-    'bundle' => 'image_text'
+    'field_name' => NODE_IMAGE_STYLE_FIELD,
+    'label' => 'Specify Image styles for the paragraphs items image',
+    'entity_type' => 'node',
+    'bundle' => NODE_SUBTYPE,
+    'required' => TRUE,
+    'default_value' => array(
+        0 => array(
+          'value' => 'thumbnail'
+        )
+     )
   );
 
   field_create_instance($field_instance);
+
+  drupal_set_message(t('Successfully created field @field_name and added it to @paragraph_bundle ', array('@field_name' => NODE_IMAGE_STYLE_FIELD, '@node_bundle' => BUNDLE_ARTICLE))) ;
 }
 
 /**
- * Implements hook_uninstall()
+ * Implement hook_uninstall
  *
  */
 function sample_code_uninstall() {
-  if (field_info_field(PARAGRAPH_ITEM_IMAGE_STYLE)) {
-    field_delete_field(PARAGRAPH_ITEM_IMAGE_STYLE);
-    watchdog('scratchpad', 'field image has been successfully deleted', array(), WATCHDOG_NOTICE);
+  if (field_info_field(NODE_IMAGE_STYLE_FIELD)) {
+    field_delete_field(NODE_IMAGE_STYLE_FIELD);
+    watchdog('sample_code', 'field image has been successfully deleted', array(), WATCHDOG_NOTICE);
   }
 
-  drupal_uninstall_schema('contact_v1');
+  if ($instance = field_info_instance('node', NODE_IMAGE_STYLE_FIELD , 'article')) {
+    field_delete_instance($instance);
+  }
 }
-
 
 
 
@@ -112,44 +129,3 @@ function sample_code_schema() {
 }
 
 
-
-/**
- * implements hook_enable()
- *
- */
-
-function sample_code_enable() {
-  if (!field_info_field(FIELD_IMAGE_STYLE_OPTIONS)) {
-    $field = array(
-        'field_name' => FIELD_IMAGE_STYLE_OPTIONS,
-        'required' => TRUE,
-        'type' => 'list_text' ,
-        'settings' => array(
-          'allowed_values_function' => '_custom_image_styles',
-          'allowed_values' => array(
-            'no_image' => 'No Image'
-            ),
-        )
-    );
-
-     field_create_field($field);
-   }
-
-
-  $field_instance = array(
-    'field_name' => FIELD_IMAGE_STYLE_OPTIONS,
-    'label' => 'Specify Image styles for the paragraphs items image',
-    'entity_type' => 'node',
-    'bundle' => BUNDLE_ARTICLE,
-    'required' => TRUE,
-    'default_value' => array(
-        0 => array(
-          'value' => 'thumbnail'
-        )
-     )
-  );
-
-  field_create_instance($field_instance);
-
-  drupal_set_message(t('Successfully created field @field_name and added it to @paragraph_bundle ', array('@field_name' => FIELD_IMAGE_STYLE_OPTIONS, '@node_bundle' => BUNDLE_ARTICLE))) ;
-}
